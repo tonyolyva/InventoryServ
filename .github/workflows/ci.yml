@@ -1,0 +1,26 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build_and_test:
+    name: Build and Test
+    runs-on: macos-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Select Xcode version
+      run: |
+        sudo xcode-select -s "/Applications/Xcode_15.2.app/Contents/Developer" # Replace with your Xcode version if different
+        xcrun xcodebuild -version
+
+    - name: Build and test
+      run: |
+        xcodebuild clean build -project InventoryServ.xcodeproj -scheme InventoryServ -destination 'platform=iOS Simulator,OS=17.2,name=iPhone 15 Pro' -enableCodeCoverage YES
+        xcodebuild test -project InventoryServ.xcodeproj -scheme InventoryServ -destination 'platform=iOS Simulator,OS=17.2,name=iPhone 15 Pro' -enableCodeCoverage YES
