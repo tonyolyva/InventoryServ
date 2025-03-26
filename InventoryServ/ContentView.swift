@@ -16,8 +16,7 @@ struct ContentView: View {
     @State private var isAddingItem = false // Declare isAddingItem as state
     
     var body: some View {
-        //        NavigationView {
-        NavigationStack { // This MUST be the first view
+        NavigationStack {
             List(items) { item in
                 VStack(alignment: .leading) {
                     Text(item.name)
@@ -36,7 +35,7 @@ struct ContentView: View {
             .navigationTitle("Inventory")
             .accessibilityIdentifier("inventoryList")
             .navigationDestination(isPresented: $isAddingItem) {
-                AddItemView() // This should be your 3rd page
+                AddItemView()
             }
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {

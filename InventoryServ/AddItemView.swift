@@ -10,7 +10,6 @@ struct AddItemView: View {
     
     var body: some View {
         NavigationStack {
-//        NavigationView {
             Text("Add New Item")
                 .navigationTitle("Add Item")
                 .toolbar {
@@ -33,4 +32,3 @@ struct AddItemView: View {
 #Preview {
     AddItemView()
 }
-

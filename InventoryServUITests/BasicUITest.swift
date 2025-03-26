@@ -8,70 +8,60 @@ import XCTest
 @MainActor
 final class BasicUITest: XCTestCase {
     
+    let app = XCUIApplication() // Initialize XCUIApplication once for the test suite
+    
     override func setUpWithError() throws {
         try super.setUpWithError()
         
         // In UI tests it is usually best to stop immediately when a failure occurs.
         continueAfterFailure = false
         
-        // Launch the application we want to test.
-        let launchExpectation = XCTestExpectation(description: "App launched")
-        
-        Task.detached { @MainActor in
-            let app = XCUIApplication() // Initialize XCUIApplication on the main actor
+        // Launch the application before each test
+        Task { @MainActor in
+            let app = XCUIApplication() // Initialize XCUIApplication here
             app.launch()
-            launchExpectation.fulfill()
         }
-        
-        wait(for: [launchExpectation], timeout: 5) // Use synchronous wait
     }
     
-    func testAppLaunches() throws {
-        let app = XCUIApplication()
+    func testAppLaunchesSuccessfully() throws {
         XCTAssertTrue(app.state == .runningForeground, "App should be running in the foreground")
     }
     
-    func testLabelExists() throws {
-        let app = XCUIApplication()
-        sleep(2) // Wait for 2 seconds (TEMPORARY)
-        let welcomeLabel = app.staticTexts["welcomeLabel"]
-        XCTAssertTrue(welcomeLabel.exists, "Welcome label should be visible")
+    func testInventoryLabelIsVisibleOnInventoryScreen() throws {
+        let inventoryLabel = app.staticTexts["Inventory"]
+        XCTAssertTrue(inventoryLabel.waitForExistence(timeout: 5), "Inventory label should be visible within 5 seconds")
     }
     
-    func testButtonTapAndTextChange() throws {
-        func testButtonTapAndTextChange() throws {
-            let app = XCUIApplication()
-            sleep(2) // Wait for 2 seconds (TEMPORARY)
-            let myButton = app.buttons["myButton"]
-            XCTAssertTrue(myButton.exists, "My button should be visible")
-            
-            // Tap the button
-            myButton.tap()
-            
-            // Assuming tapping the button changes the text of a label with identifier "statusLabel"
-            let statusLabel = app.staticTexts["statusLabel"]
-            XCTAssertEqual(statusLabel.label, "Button Tapped", "Status label should change after button tap")
-        }
-    }
-    
-    func testItemLabelExists() throws {
-        let app = XCUIApplication()
-        let usbCableLabel = app.staticTexts["itemName_USB Cable"]
-        let labelExists = usbCableLabel.waitForExistence(timeout: 5) // Wait up to 5 seconds
-        XCTAssertTrue(labelExists, "USB Cable label should be visible")
-    }
-    
-    func testAddItemButtonTapAndTitleChange() throws {
-        let app = XCUIApplication()
+    func testAddItemButtonTapNavigatesToAddItemView() throws {
         let addItemButton = app.buttons["addItemButton"]
-        XCTAssertTrue(addItemButton.exists, "Add Item button should be visible")
-
+        XCTAssertTrue(addItemButton.waitForExistence(timeout: 5), "Add Item button should be visible within 5 seconds")
         addItemButton.tap()
-
-        // Wait for the new navigation bar to appear and check its title
-        let addItemNavigationBar = app.navigationBars["AddItemView"]
-        XCTAssertTrue(addItemNavigationBar.waitForExistence(timeout: 5), "AddItemView navigation bar should appear")
+        
+        let addItemNavigationBar = app.navigationBars.firstMatch
+        XCTAssertTrue(addItemNavigationBar.waitForExistence(timeout: 5), "AddItemView navigation bar should appear within 5 seconds")
+        
+        let addItemTitle = addItemNavigationBar.staticTexts["Add Item"]
+        XCTAssertTrue(addItemTitle.waitForExistence(timeout: 5), "AddItemView navigation bar should have the title 'Add Item' within 5 seconds")
     }
     
+    func testItemLabelExistsOnInventoryList() throws {
+        let expectedItemName = "USB Cable"
+        let itemLabelIdentifier = "itemName_\(expectedItemName)"
+        let usbCableLabel = app.staticTexts[itemLabelIdentifier]
+        XCTAssertTrue(usbCableLabel.waitForExistence(timeout: 5), "\(expectedItemName) label should be visible within 5 seconds")
+        XCTAssertEqual(usbCableLabel.label, expectedItemName, "Label text should be '\(expectedItemName)'")
+    }
+    
+    func testAddItemButtonTapNavigatesToAddItemViewWithTitle() throws {
+        let addItemButton = app.buttons["addItemButton"]
+        XCTAssertTrue(addItemButton.waitForExistence(timeout: 5), "Add Item button should be visible within 5 seconds")
+        addItemButton.tap()
+        
+        let addItemNavigationBar = app.navigationBars.firstMatch
+        XCTAssertTrue(addItemNavigationBar.waitForExistence(timeout: 5), "AddItemView navigation bar should appear within 5 seconds")
+        
+        let addItemTitle = addItemNavigationBar.staticTexts["Add Item"]
+        XCTAssertTrue(addItemTitle.waitForExistence(timeout: 5), "AddItemView navigation bar should have the title 'Add Item' within 5 seconds")
+    }
     
 }
