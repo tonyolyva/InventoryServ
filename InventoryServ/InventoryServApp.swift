@@ -2,8 +2,6 @@
 //  InventoryServApp.swift
 //  InventoryServ
 //
-//  Created by Anatoliy Olyva on 3/24/25.
-//
 
 import SwiftUI
 

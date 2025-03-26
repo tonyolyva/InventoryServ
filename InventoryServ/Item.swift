@@ -5,10 +5,10 @@
 import Foundation
 
 struct Item: Identifiable {
-    let id = UUID()
-    var name: String
-    var description: String? // description is optional
-    var location: String // e.g., "Row 3, Box 12"
-    var image: String? // Optional image name, if you want to add images
-    var category: String? //Optional category
+    let id = UUID() // Add this if it's missing
+    let name: String
+    let description: String?
+    let location: String
+    let image: String
+    let category: String
 }

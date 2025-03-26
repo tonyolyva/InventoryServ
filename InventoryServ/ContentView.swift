@@ -13,22 +13,44 @@ struct ContentView: View {
         // Add more items...
     ]
     
+    @State private var isAddingItem = false // Declare isAddingItem as state
+    
     var body: some View {
-        NavigationView {
+        //        NavigationView {
+        NavigationStack { // This MUST be the first view
             List(items) { item in
                 VStack(alignment: .leading) {
-                    Text(item.name).font(.headline)
-                    Text(item.location).font(.subheadline)
-                    if let description = item.description{
-                        Text(description).font(.caption)
+                    Text(item.name)
+                        .font(.headline)
+                        .accessibilityIdentifier("itemName_\(item.name)")
+                    Text(item.location)
+                        .font(.subheadline)
+                        .accessibilityIdentifier("itemLocation_\(item.name)")
+                    if let description = item.description {
+                        Text(description)
+                            .font(.caption)
+                            .accessibilityIdentifier("itemDescription_\(item.name)")
                     }
                 }
             }
             .navigationTitle("Inventory")
+            .accessibilityIdentifier("inventoryList")
+            .navigationDestination(isPresented: $isAddingItem) {
+                AddItemView() // This should be your 3rd page
+            }
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button(action: { isAddingItem = true }) {
+                        Label("Add Item", systemImage: "folder.badge.plus")
+                    }
+                    .accessibilityIdentifier("addItemButton")
+                }
+            }
         }
     }
-}
-
-#Preview {
-    ContentView()
+    
+    func addItem() {
+        isAddingItem = true
+        print("isAddingItem set to: \(isAddingItem)")
+    }
 }
