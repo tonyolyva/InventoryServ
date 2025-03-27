@@ -2,23 +2,54 @@
 //  ContentView.swift
 //  InventoryServ
 //
-//  Created by Anatoliy Olyva on 3/26/25.
-//
 
 import SwiftUI
 
 struct ContentView: View {
+    var items: [Item] = [
+        Item(name: "USB Cable", description: "Long USB-C cable", location: "Row 1, Box 5", image: "usb_cable", category: "Electronics"),
+        Item(name: "Adapter", description: "USB-C to HDMI adapter", location: "Row 2, Box 8", image: "adapter", category: "Electronics"),
+        Item(name: "Hammer", description: "Heavy hammer", location: "Row 3, Box 1", image: "hammer", category: "Tools"),
+        // Add more items...
+    ]
+    
+    @State private var isAddingItem = false // Declare isAddingItem as state
+    
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        NavigationStack {
+            List(items) { item in
+                VStack(alignment: .leading) {
+                    Text(item.name)
+                        .font(.headline)
+                        .accessibilityIdentifier("itemName_\(item.name)")
+                    Text(item.location)
+                        .font(.subheadline)
+                        .accessibilityIdentifier("itemLocation_\(item.name)")
+                    if let description = item.description {
+                        Text(description)
+                            .font(.caption)
+                            .accessibilityIdentifier("itemDescription_\(item.name)")
+                    }
+                }
+            }
+            .navigationTitle("Inventory")
+            .accessibilityIdentifier("inventoryList")
+            .navigationDestination(isPresented: $isAddingItem) {
+                AddItemView()
+            }
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button(action: { isAddingItem = true }) {
+                        Label("Add Item", systemImage: "folder.badge.plus")
+                    }
+                    .accessibilityIdentifier("addItemButton")
+                }
+            }
         }
-        .padding()
     }
-}
-
-#Preview {
-    ContentView()
+    
+    func addItem() {
+        isAddingItem = true
+        print("isAddingItem set to: \(isAddingItem)")
+    }
 }
